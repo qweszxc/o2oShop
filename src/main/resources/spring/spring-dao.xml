@@ -19,17 +19,50 @@
 
 	<context:property-placeholder location="classpath:jdbc.properties"/>
 	
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="driverClass" value="${jdbc.driver}"/>
+	<bean id="abstractDataSource" abstract="true"  destroy-method="close" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!-- <property name="driverClass" value="${jdbc.driver}"/>
 		<property name="jdbcUrl" value="${jdbc.url}"/>
 		<property name="user" value="${jdbc.username}"/>
-		<property name="password" value="${jdbc.password}"/>
+		<property name="password" value="${jdbc.password}"/> -->
 		
 		<property name="maxPoolSize" value="30"/>
 		<property name="minPoolSize" value="10"/>
 		<property name="autoCommitOnClose" value="false"/>
 		<property name="checkoutTimeout" value="10000"/>
 		<property name="acquireRetryAttempts" value="2"/>
+	</bean>
+	
+	<!-- 主库 -->
+	<bean id="master" parent="abstractDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<!-- 从库 -->
+	<bean id="slave" parent="abstractDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<!-- 配置动态数据源，这里的targetDataSources就是路由数据源所对应的名称 -->
+	<bean id="dynamicDataSource" class="zej.o2o.dao.split.DynamicDataSource">
+		<property name="targetDataSources">
+			<map>
+				<entry value-ref="master" key="master"></entry>
+				<entry value-ref="slave" key="slave"></entry>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 延迟加载数据源，根据sql决定使用的数据源 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+		<property name="targetDataSource">
+			<ref bean="dynamicDataSource"/>
+		</property>
 	</bean>
 	
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
