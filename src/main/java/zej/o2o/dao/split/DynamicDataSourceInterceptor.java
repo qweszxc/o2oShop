@@ -9,14 +9,20 @@ import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
+import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 //mybatis级别的拦截器，拦截mybatis传入的sql信息，根据sql读或写使用不同数据源
 //需要在mybatis配置文件配置
+@Intercepts({@Signature(type=Executor.class,method="update",args= {MappedStatement.class,Object.class}),
+	@Signature(type=Executor.class,method="query",args= {MappedStatement.class,Object.class,RowBounds.class,ResultHandler.class})})
 public class DynamicDataSourceInterceptor implements Interceptor{
 
 	private static Logger logger=LoggerFactory.getLogger(DynamicDataSourceInterceptor.class);
