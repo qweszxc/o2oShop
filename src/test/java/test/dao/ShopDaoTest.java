@@ -1,6 +1,7 @@
 package test.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -53,5 +54,29 @@ public class ShopDaoTest extends BaseTest{
 		shop.setLastEditTime(new Date());
 		int effectedNum=shopDao.updateShop(shop);
 		System.out.println(effectedNum);
+	}
+	
+	@Test
+	public void testQueryByShopId() {
+		Shop shop=shopDao.queryByShopId(1L);
+		System.out.println(shop.getArea().getAreaName());
+		System.out.println(shop);
+	}
+	
+	@Test
+	public void testQueryShopList() {
+		Shop shopCondition=new Shop();
+		PersonInfo owner=new PersonInfo();
+		Area area=new Area();
+		area.setAreaId(2);
+		owner.setUserId(1L);
+		shopCondition.setOwner(owner);
+		shopCondition.setArea(area);
+		List<Shop>shopList=shopDao.queryShopList(shopCondition, 0, 2);
+		int count=shopDao.queryShopCount(shopCondition);
+		System.out.println(count);
+		for(Shop s:shopList) {
+			System.out.println(s.getPhone());
+		}
 	}
 }

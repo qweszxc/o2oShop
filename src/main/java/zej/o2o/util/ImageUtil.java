@@ -77,5 +77,19 @@ public class ImageUtil {
 				ImageIO.read(new File(basePath+"1875.png")), 0.25f).outputQuality(0.8f)
 				.toFile(basePath+"new.jpg");
 	}
+	
+	public static void deleteFileOrPath(String storePath) {
+		//判断storePaht是文件还是目录，是文件就删除，是目录就删除该目录下所有文件
+		File fileOrPath=new File(PathUtil.getImgBasePath()+storePath);
+		if(fileOrPath.exists()) {
+			if(fileOrPath.isDirectory()) {
+				File files[]=fileOrPath.listFiles();
+				for(int i=0;i<files.length;i++) {
+					files[i].delete();
+				}
+			}
+			fileOrPath.delete();
+		}
+	}
 
 }

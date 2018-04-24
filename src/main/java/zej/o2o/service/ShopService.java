@@ -8,5 +8,11 @@ import zej.o2o.exceptions.ShopOperationException;
 
 public interface ShopService {
 
+	Shop getByShopId(long shopId);
+	
+	ShopExecution modifyShop(Shop shop,InputStream shopImgInputStream,String fileName)throws ShopOperationException;
+	
 	ShopExecution addShop(Shop shop, InputStream shopImgInputStream,String fileName)throws ShopOperationException;
+	
+	ShopExecution getShopList(Shop shopCondition,int pageIndex,int pageSize);
 }

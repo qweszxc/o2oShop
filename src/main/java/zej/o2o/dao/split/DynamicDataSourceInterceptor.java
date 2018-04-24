@@ -13,16 +13,22 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 //mybatis级别的拦截器，拦截mybatis传入的sql信息，根据sql读或写使用不同数据源
 //需要在mybatis配置文件配置
-@Intercepts({@Signature(type=Executor.class,method="update",args= {MappedStatement.class,Object.class}),
-	@Signature(type=Executor.class,method="query",args= {MappedStatement.class,Object.class,RowBounds.class,ResultHandler.class})})
+//DBProxy中间件
+//拦截器通过注释工作
+@Intercepts({
+@Signature(type = Executor.class, method = "update", args = {
+        MappedStatement.class, Object.class }),
+@Signature(type = Executor.class, method = "query", args = {
+        MappedStatement.class, Object.class, RowBounds.class,
+        ResultHandler.class }) })
 public class DynamicDataSourceInterceptor implements Interceptor{
 
 	private static Logger logger=LoggerFactory.getLogger(DynamicDataSourceInterceptor.class);
@@ -58,8 +64,10 @@ public class DynamicDataSourceInterceptor implements Interceptor{
 		}else {
 			lookupKey=DynamicDataSourceHolder.DB_MASTER;
 		}
+		System.out.println("=======================使用"+lookupKey+"库===================");
 		logger.debug("设置方法[{}] use [{}] Strategy,SqlCommanType [{}]..",ms.getId(),lookupKey,ms.getSqlCommandType().name());
 		DynamicDataSourceHolder.setDbType(lookupKey);
+		System.out.println("========use interceptor=================");
 		return invocation.proceed();
 	}
 

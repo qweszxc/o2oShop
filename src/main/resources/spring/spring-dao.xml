@@ -19,7 +19,7 @@
 
 	<context:property-placeholder location="classpath:jdbc.properties"/>
 	
-	<bean id="abstractDataSource" abstract="true"  destroy-method="close" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+	<bean id="abstractDataSource" abstract="true"   class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<!-- <property name="driverClass" value="${jdbc.driver}"/>
 		<property name="jdbcUrl" value="${jdbc.url}"/>
 		<property name="user" value="${jdbc.username}"/>
